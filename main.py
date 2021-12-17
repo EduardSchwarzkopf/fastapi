@@ -1,5 +1,5 @@
 from typing import Optional
-from fastapi import FastAPI
+from fastapi import FastAPI, Response, status
 from fastapi.params import Body
 from pydantic import BaseModel
 
@@ -16,6 +16,12 @@ class Post(BaseModel):
 @app.get("/")
 async def root():
     return {"message": "Hello, new stuff"}
+
+
+@app.get("/posts/{id}")
+async def get_post(id: int, response: Response):
+    response.status_code = status.HTTP_404_NOT_FOUND
+    return {"data": f"post_id: {id}"}
 
 
 @app.get("/posts")
