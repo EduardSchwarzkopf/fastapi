@@ -18,6 +18,11 @@ async def root():
     return {"message": "Hello, new stuff"}
 
 
-@app.post("/create")
-async def create(payload: Post):
+@app.get("/posts")
+async def get_posts():
+    return {"data": "data"}
+
+
+@app.post("/posts")
+async def create_posts(payload: Post):
     return {"message": payload}
