@@ -1,19 +1,12 @@
 from typing import Optional
 from fastapi import FastAPI, HTTPException, status
 from fastapi.params import Depends
-from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from . import models
+from . import models, schemas
 from .database import engine, get_db
 
 models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
-
-
-class Post(BaseModel):
-    title: str
-    content: str
-    published: bool = True
 
 
 @app.get("/")
@@ -34,7 +27,7 @@ async def get_posts(db: Session = Depends(get_db)):
 
 
 @app.post("/posts", status_code=201)
-async def create_posts(post: Post, db: Session = Depends(get_db)):
+async def create_posts(post: schemas.Post, db: Session = Depends(get_db)):
 
     new_post = models.Post(**post.dict())
 
