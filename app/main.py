@@ -69,4 +69,7 @@ async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
 )
 async def get_user(id: int, db: Session = Depends(get_db)):
     user = db.query(models.User).get(id)
+
+    if not user:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, f"No User with Id: {id}")
     return user
