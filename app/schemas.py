@@ -23,3 +23,7 @@ class UserCreate(UserBase):
 
 class UserData(UserBase):
     id: int
+
+
+class UserLogin(UserCreate):
+    pass
