@@ -34,5 +34,15 @@ async def get_posts():
 
 
 @app.post("/posts", status_code=201)
-async def create_posts(payload: Post):
-    return {"message": payload}
+async def create_posts(post: Post, db: Session = Depends(get_db)):
+
+    new_post = models.Post(
+        title=post.title,
+        content=post.content,
+    )
+
+    db.add(new_post)
+    db.commit()
+    db.refresh(new_post)
+
+    return {"data": new_post}
