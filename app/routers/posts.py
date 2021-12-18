@@ -1,7 +1,7 @@
 from typing import List
 from fastapi import Depends, APIRouter
 from sqlalchemy.orm import Session
-from .. import models, schemas
+from .. import models, schemas, oauth2
 from ..database import get_db
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
@@ -23,9 +23,15 @@ async def get_posts(db: Session = Depends(get_db)):
 
 
 @router.post("/", status_code=201, response_model=schemas.Post)
-async def create_posts(post: schemas.Post, db: Session = Depends(get_db)):
+async def create_posts(
+    post: schemas.PostCreate,
+    db: Session = Depends(get_db),
+    user_id: int = Depends(oauth2.get_current_user),  # checks if user is logged in
+):
 
     new_post = models.Post(**post.dict())
+
+    print(user_id)
 
     db.add(new_post)
     db.commit()

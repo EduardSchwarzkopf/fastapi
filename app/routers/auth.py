@@ -19,7 +19,7 @@ def login(
     )
 
     if not user or not utils.verify(user_credentials.password, user.password):
-        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Invalid Credentials")
+        raise HTTPException(status.HTTP_403_FORBIDDEN, detail="Invalid Credentials")
 
     user_data = {"user_id": user.id}
     access_token = oauth2.create_access_token(data=user_data)
