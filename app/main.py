@@ -1,30 +1,13 @@
 from typing import Optional
 from fastapi import FastAPI, HTTPException, status
-from fastapi.params import Body
+from fastapi.params import Depends
 from pydantic import BaseModel
-import psycopg2
-from psycopg2.extras import RealDictCursor
-import time
+from sqlalchemy.orm import Session
+from . import models
+from .database import engine, get_db
 
+models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
-
-while True:
-    try:
-        conn = psycopg2.connect(
-            host="localhost",
-            database="fastapi",
-            user="postgres",
-            password="postgres",
-            cursor_factory=RealDictCursor,
-        )
-
-        print("Connecting to database!")
-        break
-
-    except Exception as e:
-        print("Could not connect to Database")
-        print("Error: " + e.message)
-        time.sleep(3)
 
 
 class Post(BaseModel):
@@ -40,7 +23,7 @@ async def root():
 
 
 @app.get("/posts/{id}")
-async def get_post(id: int):
+async def get_post(id: int, db: Session = Depends(get_db)):
     raise HTTPException(status.HTTP_404_NOT_FOUND, detail="nothing found")
     return {"data": f"post_id: {id}"}
 
