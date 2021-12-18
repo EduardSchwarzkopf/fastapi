@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List
 from fastapi import FastAPI, HTTPException, status
 from fastapi.params import Depends
 from sqlalchemy.orm import Session
@@ -14,16 +14,19 @@ async def root():
     return {"message": "Hello, new stuff"}
 
 
-@app.get("/posts/{id}")
+@app.get(
+    "/posts/{id}",
+    response_model=schemas.Post,
+)
 async def get_post(id: int, db: Session = Depends(get_db)):
     post = db.query(models.Post).get(id)
-    return {"data": post}
+    return post
 
 
-@app.get("/posts")
+@app.get("/posts", response_model=List[schemas.Post])
 async def get_posts(db: Session = Depends(get_db)):
     posts = db.query(models.Post).all()
-    return {"data": posts}
+    return posts
 
 
 @app.post("/posts", status_code=201, response_model=schemas.Post)
