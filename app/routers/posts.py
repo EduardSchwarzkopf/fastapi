@@ -4,11 +4,11 @@ from sqlalchemy.orm import Session
 from .. import models, schemas
 from ..database import get_db
 
-router = APIRouter()
+router = APIRouter(prefix="/posts", tags=["Posts"])
 
 
 @router.get(
-    "/posts/{id}",
+    "/{id}",
     response_model=schemas.Post,
 )
 async def get_post(id: int, db: Session = Depends(get_db)):
@@ -16,13 +16,13 @@ async def get_post(id: int, db: Session = Depends(get_db)):
     return post
 
 
-@router.get("/posts", response_model=List[schemas.Post])
+@router.get("/", response_model=List[schemas.Post])
 async def get_posts(db: Session = Depends(get_db)):
     posts = db.query(models.Post).all()
     return posts
 
 
-@router.post("/posts", status_code=201, response_model=schemas.Post)
+@router.post("/", status_code=201, response_model=schemas.Post)
 async def create_posts(post: schemas.Post, db: Session = Depends(get_db)):
 
     new_post = models.Post(**post.dict())
