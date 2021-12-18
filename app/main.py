@@ -23,13 +23,14 @@ async def root():
 
 @app.get("/posts/{id}")
 async def get_post(id: int, db: Session = Depends(get_db)):
-    raise HTTPException(status.HTTP_404_NOT_FOUND, detail="nothing found")
-    return {"data": f"post_id: {id}"}
+    post = db.query(models.Post).get(id)
+    return {"data": post}
 
 
 @app.get("/posts")
-async def get_posts():
-    return {"data": "data"}
+async def get_posts(db: Session = Depends(get_db)):
+    posts = db.query(models.Post).all()
+    return {"data": posts}
 
 
 @app.post("/posts", status_code=201)
