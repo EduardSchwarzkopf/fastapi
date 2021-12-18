@@ -14,7 +14,6 @@ class Post(BaseModel):
     title: str
     content: str
     published: bool = True
-    rating: Optional[int] = None
 
 
 @app.get("/")
@@ -36,10 +35,7 @@ async def get_posts():
 @app.post("/posts", status_code=201)
 async def create_posts(post: Post, db: Session = Depends(get_db)):
 
-    new_post = models.Post(
-        title=post.title,
-        content=post.content,
-    )
+    new_post = models.Post(**post.dict())
 
     db.add(new_post)
     db.commit()
