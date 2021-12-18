@@ -39,3 +39,30 @@ async def create_posts(post: schemas.Post, db: Session = Depends(get_db)):
     db.refresh(new_post)
 
     return new_post
+
+
+@app.get("/users", response_model=List[schemas.UserData])
+async def get_users(db: Session = Depends(get_db)):
+    users = db.query(models.User).all()
+    return users
+
+
+@app.post("/users", status_code=201, response_model=schemas.UserData)
+async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+
+    new_user = models.User(**user.dict())
+
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+
+    return new_user
+
+
+@app.get(
+    "/users/{id}",
+    response_model=schemas.UserData,
+)
+async def get_user(id: int, db: Session = Depends(get_db)):
+    user = db.query(models.User).get(id)
+    return user
