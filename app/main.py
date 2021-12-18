@@ -26,7 +26,7 @@ async def get_posts(db: Session = Depends(get_db)):
     return {"data": posts}
 
 
-@app.post("/posts", status_code=201)
+@app.post("/posts", status_code=201, response_model=schemas.Post)
 async def create_posts(post: schemas.Post, db: Session = Depends(get_db)):
 
     new_post = models.Post(**post.dict())
@@ -35,4 +35,4 @@ async def create_posts(post: schemas.Post, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_post)
 
-    return {"data": new_post}
+    return new_post
