@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from fastapi import Depends, APIRouter, Response, status
 from fastapi.exceptions import HTTPException
 from sqlalchemy.orm import Session
@@ -18,8 +18,8 @@ async def get_post(id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/", response_model=List[schemas.Post])
-async def get_posts(db: Session = Depends(get_db)):
-    posts = db.query(models.Post).all()
+async def get_posts(db: Session = Depends(get_db), search: Optional[str] = ""):
+    posts = db.query(models.Post).filter(models.Post.title.contains(search)).all()
     return posts
 
 
