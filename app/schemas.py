@@ -8,22 +8,6 @@ class Base(BaseModel):
         orm_mode = True
 
 
-class PostBase(Base):
-    title: str
-    content: str
-    published: bool = True
-
-
-class Post(PostBase):
-    id: int
-    owner_id: int
-    created_at: datetime
-
-
-class PostCreate(PostBase):
-    pass
-
-
 class UserBase(Base):
     email: EmailStr
 
@@ -37,6 +21,22 @@ class UserData(UserBase):
 
 
 class UserLogin(UserCreate):
+    pass
+
+
+class PostBase(Base):
+    title: str
+    content: str
+    published: bool = True
+
+
+class Post(PostBase):
+    id: int
+    created_at: datetime
+    owner: UserData
+
+
+class PostCreate(PostBase):
     pass
 
 
