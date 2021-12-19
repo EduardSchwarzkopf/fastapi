@@ -12,12 +12,12 @@ class PostBase(Base):
     title: str
     content: str
     published: bool = True
-    created_at: datetime
 
 
 class Post(PostBase):
     id: int
     owner_id: int
+    created_at: datetime
 
 
 class PostCreate(PostBase):

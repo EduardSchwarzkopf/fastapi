@@ -1,5 +1,6 @@
 from typing import List
-from fastapi import Depends, APIRouter
+from fastapi import Depends, APIRouter, Response, status
+from fastapi.exceptions import HTTPException
 from sqlalchemy.orm import Session
 from .. import models, schemas, oauth2
 from ..database import get_db
@@ -29,10 +30,34 @@ async def create_posts(
     current_user: models.User = Depends(oauth2.get_current_user),
 ):
 
-    new_post = models.Post(current_user.id, **post.dict())
+    new_post = models.Post(owner_id=current_user.id, **post.dict())
 
     db.add(new_post)
     db.commit()
     db.refresh(new_post)
 
     return new_post
+
+
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_post(
+    id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(oauth2.get_current_user),
+):
+    post = db.query(models.Post).get(id)
+
+    if post == None:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND, f"Could not find post with id: {id}"
+        )
+
+    if post.owner_id != current_user.id:
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN, "Not authorized to perfom requested action"
+        )
+
+    db.delete(post)
+    db.commit()
+
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
