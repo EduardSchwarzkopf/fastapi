@@ -26,12 +26,10 @@ async def get_posts(db: Session = Depends(get_db)):
 async def create_posts(
     post: schemas.PostCreate,
     db: Session = Depends(get_db),
-    user_id: int = Depends(oauth2.get_current_user),  # checks if user is logged in
+    current_user: models.User = Depends(oauth2.get_current_user),
 ):
 
     new_post = models.Post(**post.dict())
-
-    print(user_id)
 
     db.add(new_post)
     db.commit()
