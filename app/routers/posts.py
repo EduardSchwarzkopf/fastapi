@@ -2,6 +2,7 @@ from typing import List, Optional
 from fastapi import Depends, APIRouter, Response, status
 from fastapi.exceptions import HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy.sql.functions import func
 from .. import models, schemas, oauth2
 from ..database import get_db
 
@@ -17,9 +18,15 @@ async def get_post(id: int, db: Session = Depends(get_db)):
     return post
 
 
-@router.get("/", response_model=List[schemas.Post])
+@router.get("/", response_model=List[schemas.PostResult])
 async def get_posts(db: Session = Depends(get_db), search: Optional[str] = ""):
-    posts = db.query(models.Post).filter(models.Post.title.contains(search)).all()
+    posts = (
+        db.query(models.Post, func.count(models.Vote.post_id).label("vote"))
+        .join(models.Vote, models.Vote.post_id == models.Post.id, isouter=True)
+        .group_by(models.Post.id)
+        .filter(models.Post.title.contains(search))
+        .all()
+    )
     return posts
 
 

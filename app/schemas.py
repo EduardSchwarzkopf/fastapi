@@ -38,6 +38,11 @@ class Post(PostBase):
     owner: UserData
 
 
+class PostResult(Base):
+    Post: Post
+    vote: int
+
+
 class PostCreate(PostBase):
     pass
 
@@ -51,6 +56,6 @@ class TokenData(BaseModel):
     id: Optional[str]
 
 
-class Vote(Base):
+class Vote(BaseModel):
     post_id: int
     dir: conint(ge=0, le=1)
