@@ -3,6 +3,7 @@ from . import models
 from .database import engine
 from .routers import users, posts, auth, vote
 
+# create all tables that are not created yet
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
