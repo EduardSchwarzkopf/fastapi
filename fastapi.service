@@ -1,0 +1,15 @@
+
+[Unit]
+Description= example description of service
+After=network.target
+
+[Service]
+User=username       # replace
+Group=user_group    # replace
+WorkingDirectory=/PATH/TO/app/src/
+Environment="PATH=/PATH/TO/app/venv/bin"
+EnvironmentFile=/PATH/TO/.env # best to keep it out of the app folder for security reasons
+ExecStart=/PATH/TO/app/venv/bin/gunicorn -w 4 -k uvicorn.workers.UvicornWorker app.main:app --bind 0.0.0.0:8000
+
+[Install]
+WantedBy=multi-user.target
