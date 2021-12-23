@@ -45,6 +45,6 @@ def test_bank_collect_interest(bank_account):
 )
 def test_bank_transaction(zero_bank_account, deposited, withdrew, balance):
     zero_bank_account.deposit(deposited)
-    zero_bank_account.withdraw(withdraw)
+    zero_bank_account.withdraw(withdrew)
 
     assert zero_bank_account.balance == balance
