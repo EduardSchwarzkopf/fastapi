@@ -41,10 +41,16 @@ def test_bank_collect_interest(bank_account):
 
 
 @pytest.mark.parametrize(
-    "deposited, withdrew, balance", [(100, 50, 50), (200, 20, 180), (5, 10, -5)]
+    "deposited, withdrew, balance", [(100, 50, 50), (200, 20, 180), (5, 5, 0)]
 )
 def test_bank_transaction(zero_bank_account, deposited, withdrew, balance):
     zero_bank_account.deposit(deposited)
     zero_bank_account.withdraw(withdrew)
 
     assert zero_bank_account.balance == balance
+
+
+# pytest.raises expect an Exception
+def test_bank_insufficient_funds(bank_account):
+    with pytest.raises(Exception):
+        bank_account.withdraw(200)
