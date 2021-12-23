@@ -1,5 +1,5 @@
 import pytest
-from app.calculations import BankAccount
+from app.calculations import BankAccount, InsufficientFunds
 
 # fixtures runs before the test
 @pytest.fixture
@@ -52,5 +52,5 @@ def test_bank_transaction(zero_bank_account, deposited, withdrew, balance):
 
 # pytest.raises expect an Exception
 def test_bank_insufficient_funds(bank_account):
-    with pytest.raises(Exception):
+    with pytest.raises(InsufficientFunds):
         bank_account.withdraw(200)

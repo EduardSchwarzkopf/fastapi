@@ -1,3 +1,7 @@
+class InsufficientFunds(Exception):
+    pass
+
+
 class BankAccount:
     def __init__(self, starting_balance=0):
         self.balance = starting_balance
@@ -7,7 +11,7 @@ class BankAccount:
 
     def withdraw(self, amount):
         if amount > self.balance:
-            raise Exception("Insufficient funds")
+            raise InsufficientFunds("Insufficient funds")
 
         self.balance -= amount
 
