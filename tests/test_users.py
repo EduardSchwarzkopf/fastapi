@@ -13,10 +13,16 @@ SQLALCHEMY_DATABASE_URL = f"postgresql://{settings.db_username}:{settings.db_pas
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-Base.metadata.create_all(bind=engine)
+#
+# use with: pytest --disable-warnings -v -x
+#
 
 
-def override_get_db():
+@pytest.fixture
+def session():
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+
     db = TestingSessionLocal()
     try:
         yield db
@@ -24,22 +30,20 @@ def override_get_db():
         db.close()
 
 
-app.dependency_overrides[get_db] = override_get_db
-
-# use with: pytest --disable-warnings -v -x
-
-
 @pytest.fixture
-def client():
-    # run this before the tests
-    Base.metadata.drop_all(bind=engine)
-    Base.metadata.create_all(bind=engine)
+def client(session):
+    def override_get_db():
+        try:
+            yield session
+        finally:
+            session.close()
 
-    # run the test
+    app.dependency_overrides[get_db] = override_get_db
+
     yield TestClient(app)
 
 
-def test_root():
+def test_root(client):
     response = client.get("/")
 
     assert response.json().get("message") == "Hello, new stuff"
