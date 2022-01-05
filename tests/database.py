@@ -12,10 +12,6 @@ SQLALCHEMY_DATABASE_URL = f"postgresql://{settings.db_username}:{settings.db_pas
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-#
-# use with: pytest --disable-warnings -v -x
-#
-
 
 @pytest.fixture
 def session():
