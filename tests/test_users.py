@@ -1,3 +1,4 @@
+import pytest
 from jose import jwt
 
 from app import schemas
@@ -35,10 +36,17 @@ def test_login_user(client, test_user):
     assert res.status_code == 200
 
 
-def test_invalid_login(client, test_user):
-    res = client.post(
-        "/login", data={"username": test_user["email"], "password": "wrong_password"}
-    )
+@pytest.mark.parametrize(
+    "email, password, status_code",
+    [
+        ("wrongemail@gmail.com", "password123", 403),
+        ("hello123@pytest.de", "wrongPassword", 403),
+        ("wrongemail@gmail.com", "wrongPassword", 403),
+        (None, "wrongPassword", 422),
+        ("wrongemail@gmail.com", None, 422),
+    ],
+)
+def test_invalid_login(client, test_user, email, password, status_code):
+    res = client.post("/login", data={"username": email, "password": password})
 
-    assert res.status_code == 403
-    assert res.json().get("detail") == "Invalid Credentials"
+    assert res.status_code == status_code
