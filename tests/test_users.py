@@ -1,3 +1,4 @@
+import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -27,7 +28,15 @@ app.dependency_overrides[get_db] = override_get_db
 
 # use with: pytest --disable-warnings -v -x
 
-client = TestClient(app)
+
+@pytest.fixture
+def client():
+    # run this before the tests
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+
+    # run the test
+    yield TestClient(app)
 
 
 def test_root():
@@ -37,7 +46,7 @@ def test_root():
     assert response.status_code == 200
 
 
-def test_create_user():
+def test_create_user(client):
     res = client.post(
         "/users/", json={"email": "hello123@pytest.de", "password": "password123"}
     )
