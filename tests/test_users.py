@@ -1,6 +1,10 @@
 from app import schemas
 from .database import client, session
 
+#
+# use with: pytest --disable-warnings -v -x
+#
+
 
 def test_root(client):
     response = client.get("/")
