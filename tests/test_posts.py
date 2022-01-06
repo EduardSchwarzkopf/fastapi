@@ -99,3 +99,8 @@ def test_delete_post_none_exists(authorized_client, test_user, test_posts):
 def test_delete_other_user_post(authorized_client, test_user, test_posts):
     res = authorized_client.delete(f"/posts/{test_posts[2].id}")
     assert res.status_code == 403
+
+
+# Other examples might be added:
+# - update posts
+# - update post from other user
