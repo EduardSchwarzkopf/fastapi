@@ -12,4 +12,4 @@ jobs:
       - name: pulling git repo
         uses: actions/checkout@v2
       - name: say hi
-        run: echo "Hi"
+        run: echo "Hi Test"
