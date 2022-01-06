@@ -1,4 +1,4 @@
-from typing import List
+import pytest
 from app import schemas
 
 
@@ -42,3 +42,40 @@ def test_get_one_post_not_exits(authorized_client, test_posts):
     res = authorized_client.get(f"/posts/9999999")
 
     assert res.status_code == 404
+
+
+@pytest.mark.parametrize(
+    "title, content",
+    [
+        ("awesome title", "awesome content"),
+        ("title", "content"),
+        ("best pizza in town", "my favorites places are..."),
+        ("my title", "my content"),
+    ],
+)
+def test_create_post(authorized_client, test_user, title, content):
+    res = authorized_client.post("/posts/", json={"title": title, "content": content})
+
+    created_post = schemas.Post(**res.json())
+
+    assert res.status_code == 201
+    assert created_post.title == title
+    assert created_post.content == content
+    assert created_post.owner.id == test_user["id"]
+
+
+def test_create_post_default_published_true(authorized_client, test_user):
+    res = authorized_client.post(
+        "/posts/", json={"title": "new title", "content": "content"}
+    )
+
+    created_post = schemas.Post(**res.json())
+
+    assert res.status_code == 201
+    assert created_post.published == True
+    assert created_post.owner.id == test_user["id"]
+
+
+def test_unauthorized_user_create_post(client, test_user):
+    res = client.post("/posts/", json={"title": "new title", "content": "content"})
+    assert res.status_code == 401
